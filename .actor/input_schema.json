@@ -1,0 +1,21 @@
+{
+  "title": "Fuel price average lookup",
+  "description": "Fetch national average petrol and diesel prices for a supported country. More countries will be added over time; results are cached for 1 hour.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "country": {
+      "title": "Country",
+      "type": "string",
+      "description": "Country code. United Kingdom is supported today; others will follow. Case-insensitive: uk, UK, Uk, etc.",
+      "editor": "select",
+      "default": "uk",
+      "prefill": "uk",
+      "enumSuggestedValues": ["uk", "UK"],
+      "enumTitles": ["United Kingdom (uk)", "United Kingdom (UK)"],
+      "pattern": "^[Uu][Kk]$"
+    }
+  },
+  "required": ["country"],
+  "additionalProperties": false
+}
