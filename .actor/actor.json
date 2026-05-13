@@ -5,5 +5,5 @@
   "version": "0.0.1",
   "dockerfile": "./Dockerfile",
   "readme": "./README.md",
-  "input": "./.actor/input_schema.json"
+  "input": "./input_schema.json"
 }
