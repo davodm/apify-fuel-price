@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Fuel price averages — output",
+  "description": "The Actor writes a single item to the default dataset: national averages on success, or a diagnostic error object before the run fails.",
+  "properties": {
+    "dataset": {
+      "type": "string",
+      "title": "Dataset results",
+      "description": "Items from the default dataset (JSON): one row with petrol/diesel averages, or an error row with error, message, and country.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}
