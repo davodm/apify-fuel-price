@@ -5,5 +5,9 @@
   "version": "0.0.1",
   "dockerfile": "./Dockerfile",
   "readme": "./README.md",
-  "input": "./input_schema.json"
+  "input": "./input_schema.json",
+  "output": "./output_schema.json",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  }
 }

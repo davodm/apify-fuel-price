@@ -1,0 +1,125 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Fuel price dataset item",
+    "oneOf": [
+      {
+        "type": "object",
+        "title": "National averages",
+        "required": [
+          "country",
+          "petrol",
+          "diesel",
+          "lastUpdate",
+          "currency",
+          "amountUnit",
+          "volumeUnit"
+        ],
+        "properties": {
+          "country": {
+            "type": "string",
+            "title": "Country code",
+            "description": "Lowercase country code this row applies to (e.g. uk).",
+            "example": "uk"
+          },
+          "petrol": {
+            "type": "number",
+            "title": "Petrol average",
+            "description": "National average unleaded petrol in amountUnit per volumeUnit (e.g. UK: pence per litre).",
+            "example": 157.9
+          },
+          "diesel": {
+            "type": "number",
+            "title": "Diesel average",
+            "description": "National average diesel in amountUnit per volumeUnit.",
+            "example": 187.1
+          },
+          "lastUpdate": {
+            "type": "string",
+            "title": "Source last update",
+            "description": "ISO 8601 timestamp in UTC when upstream data was last updated, when known.",
+            "example": "2026-05-13T10:03:00Z"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "description": "ISO 4217 currency code for the numeric amounts.",
+            "example": "GBP"
+          },
+          "amountUnit": {
+            "type": "string",
+            "title": "Amount unit",
+            "description": "Unit of the numeric price (e.g. pence for UK pump prices).",
+            "example": "pence"
+          },
+          "volumeUnit": {
+            "type": "string",
+            "title": "Volume unit",
+            "description": "Volume basis for the average (e.g. litre).",
+            "example": "litre"
+          }
+        }
+      },
+      {
+        "type": "object",
+        "title": "Run error",
+        "required": ["error", "message", "country"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "title": "Error code",
+            "description": "Stable machine-readable error code written before the Actor exits with failure.",
+            "enum": ["unsupported_country", "upstream_failed"],
+            "example": "upstream_failed"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Human-readable explanation for users and integrations.",
+            "example": "Could not obtain UK fuel averages from primary or fallback sources."
+          },
+          "country": {
+            "type": "string",
+            "title": "Requested country",
+            "description": "Country value from Actor input (as requested).",
+            "example": "xx"
+          }
+        }
+      }
+    ]
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "description": "Single table: success rows show prices and units; error rows show error and message.",
+      "transformation": {
+        "fields": [
+          "country",
+          "error",
+          "message",
+          "petrol",
+          "diesel",
+          "currency",
+          "amountUnit",
+          "volumeUnit",
+          "lastUpdate"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "country": { "label": "Country", "format": "text" },
+          "error": { "label": "Error", "format": "text" },
+          "message": { "label": "Message", "format": "text" },
+          "petrol": { "label": "Petrol", "format": "number" },
+          "diesel": { "label": "Diesel", "format": "number" },
+          "currency": { "label": "Currency", "format": "text" },
+          "amountUnit": { "label": "Amount unit", "format": "text" },
+          "volumeUnit": { "label": "Volume unit", "format": "text" },
+          "lastUpdate": { "label": "Last update", "format": "text" }
+        }
+      }
+    }
+  }
+}

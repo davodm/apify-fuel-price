@@ -11,7 +11,7 @@ from src.exceptions import UpstreamHttpError
 def build_async_client() -> httpx.AsyncClient:
     """Create a configured ``httpx.AsyncClient`` for upstream requests."""
     return httpx.AsyncClient(
-        timeout=DEFAULT_TIMEOUT_SECONDS,
+        timeout=httpx.Timeout(DEFAULT_TIMEOUT_SECONDS),
         headers={"User-Agent": USER_AGENT},
         follow_redirects=True,
     )

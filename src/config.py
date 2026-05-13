@@ -8,7 +8,8 @@ through parsing logic.
 from __future__ import annotations
 
 # --- HTTP ---
-DEFAULT_TIMEOUT_SECONDS = 30.0
+# Per-request ceiling (connect + read + write + pool) for upstream GETs.
+DEFAULT_TIMEOUT_SECONDS = 10.0
 USER_AGENT = (
     "FuelPriceActor/1.0 (+https://apify.com) "
     "httpx; respectful public data fetch for national fuel averages"

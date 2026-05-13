@@ -9,6 +9,7 @@ Human-readable page (for reference only): https://www.petrolprices.com/latest-fu
 
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 from typing import TYPE_CHECKING
@@ -118,8 +119,8 @@ async def fetch_uk_from_gviz_fallback(client: "httpx.AsyncClient") -> ParsedFuel
 
 
 async def _fetch_both(client: "httpx.AsyncClient") -> tuple[str, str]:
-    import asyncio
-
-    u_task = asyncio.create_task(get_text(client, UK_GVIZ_UNLEADED_AVERAGE_URL))
-    d_task = asyncio.create_task(get_text(client, UK_GVIZ_DIESEL_AVERAGE_URL))
-    return await u_task, await d_task
+    """Fetch unleaded and diesel gviz endpoints concurrently (same client timeout each)."""
+    return await asyncio.gather(
+        get_text(client, UK_GVIZ_UNLEADED_AVERAGE_URL),
+        get_text(client, UK_GVIZ_DIESEL_AVERAGE_URL),
+    )

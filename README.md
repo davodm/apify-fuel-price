@@ -38,6 +38,7 @@ Fuel price averages move often. This Actor gives you a **small, stable JSON** pa
 - **Multi-country direction:** built to support **more countries over time**; **only `uk` is wired today** (see [`SUPPORTED_COUNTRIES`](src/config.py) and fetchers under `src/fetchers/`).
 - **UK market today:** national averages for unleaded (`petrol`) and `diesel`, with **`currency`**, **`amountUnit`**, and **`volumeUnit`** so each numeric field is clearly **pence per litre in GBP** (not pounds per gallon).
 - **Case-insensitive input:** `uk`, `UK`, `Uk`, etc. (validated in [`.actor/input_schema.json`](.actor/input_schema.json)).
+- **Upstream HTTP:** each GET uses a **10 second** timeout ([`src/config.py`](src/config.py)); UK fallback **fetches both gviz endpoints in parallel** so each request is still bounded by that timeout.
 - **Resilient fetch:** primary HTML from [PetrolPrices.co.uk](https://petrolprices.co.uk/uk-fuel-prices-live.php), fallback to public **Google Visualization** JSON used by [PetrolPrices.com](https://www.petrolprices.com/latest-fuel-price-data-across-the-uk/).
 - **Cache:** 1-hour TTL in a **named** key-value store (see [Caching](#caching)); **no cache metadata** in the dataset row (TTL uses `fetchedAt` in KV only).
 - **Docker:** [`Dockerfile`](Dockerfile) based on [`apify/actor-python:3.12`](https://docs.apify.com/sdk/python/docs/overview) for parity with Apify Cloud.
@@ -84,6 +85,8 @@ Defined in [`.actor/input_schema.json`](.actor/input_schema.json) (validated by 
 ---
 
 ## Output (default dataset)
+
+Apify Console **Output** tab and API run `output` links are driven by [`.actor/output_schema.json`](.actor/output_schema.json); dataset field metadata and the results table use [`.actor/dataset_schema.json`](.actor/dataset_schema.json) ([output schema](https://docs.apify.com/platform/actors/development/actor-definition/output-schema), [dataset schema](https://docs.apify.com/platform/actors/development/actor-definition/dataset-schema)).
 
 Each **successful** run appends **one object** to the **default dataset**.
 
