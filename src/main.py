@@ -36,26 +36,28 @@ async def main() -> None:
             record = await resolve_fuel_averages(country)
         except UnsupportedCountryError as e:
             Actor.log.error(str(e))
-            await Actor.push_data(
-                {
-                    "error": "unsupported_country",
-                    "message": str(e),
-                    "country": country,
-                }
-            )
+            err = {
+                "error": "unsupported_country",
+                "message": str(e),
+                "country": country,
+            }
+            await Actor.push_data(err)
+            await Actor.set_value("OUTPUT", err)
             raise
         except FuelPriceError as e:
             Actor.log.error(str(e))
-            await Actor.push_data(
-                {
-                    "error": "upstream_failed",
-                    "message": str(e),
-                    "country": country,
-                }
-            )
+            err = {
+                "error": "upstream_failed",
+                "message": str(e),
+                "country": country,
+            }
+            await Actor.push_data(err)
+            await Actor.set_value("OUTPUT", err)
             raise
 
-        await Actor.push_data(record.to_push_dict())
+        payload = record.to_push_dict()
+        await Actor.push_data(payload)
+        await Actor.set_value("OUTPUT", payload)
         Actor.log.info(
             "Pushed result: country=%s petrol=%.1f diesel=%.1f (%s %s per %s) lastUpdate=%s",
             record.country,
