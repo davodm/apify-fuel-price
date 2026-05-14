@@ -59,12 +59,11 @@ async def main() -> None:
         await Actor.push_data(payload)
         await Actor.set_value("OUTPUT", payload)
         Actor.log.info(
-            "Pushed result: country=%s petrol=%.1f diesel=%.1f (%s %s per %s) lastUpdate=%s",
+            "Pushed result: country=%s petrol=%.3f diesel=%.3f %s per %s lastUpdate=%s",
             record.country,
             record.petrol,
             record.diesel,
             record.currency,
-            record.amountUnit,
             record.volumeUnit,
             record.lastUpdate,
         )

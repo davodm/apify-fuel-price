@@ -38,11 +38,10 @@ def test_dataset_payload_matches_apify_push_data_contract() -> None:
 
     record = ActorOutputRecord(
         country="uk",
-        petrol=round(parsed.petrol_ppl, 2),
-        diesel=round(parsed.diesel_ppl, 2),
+        petrol=round(parsed.petrol_ppl / 100, 3),
+        diesel=round(parsed.diesel_ppl / 100, 3),
         lastUpdate=last,
         currency=pricing["currency"],
-        amountUnit=pricing["amountUnit"],
         volumeUnit=pricing["volumeUnit"],
     )
     payload = record.to_push_dict()
@@ -53,13 +52,13 @@ def test_dataset_payload_matches_apify_push_data_contract() -> None:
         "diesel",
         "lastUpdate",
         "currency",
-        "amountUnit",
         "volumeUnit",
     }
     assert payload["country"] == "uk"
     assert payload["currency"] == "GBP"
-    assert payload["amountUnit"] == "pence"
     assert payload["volumeUnit"] == "litre"
+    assert payload["petrol"] == 1.579
+    assert payload["diesel"] == 1.872
     assert isinstance(payload["petrol"], float)
     assert isinstance(payload["diesel"], float)
 
