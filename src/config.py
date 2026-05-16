@@ -40,12 +40,13 @@ CACHE_TTL_SECONDS = 60 * 60  # 1 hour
 # --- Supported countries (extend when adding fetchers) ---
 SUPPORTED_COUNTRIES = frozenset({"uk"})
 
-# Dataset metadata: how ``petrol`` / ``diesel`` numeric fields should be read per country.
-# UK pump averages are quoted in pence per litre (not pounds per gallon).
+# Per-country output: ISO ``currency`` and ``volumeUnit`` for the row.
+# ``petrol`` / ``diesel`` are always that currency's major unit per ``volumeUnit``
+# (no separate amount unit in the API). Fetchers may read local conventions;
+# the service layer normalizes before ``ActorOutputRecord`` (e.g. UK pence/L → GBP/L).
 COUNTRY_OUTPUT_PRICING: dict[str, dict[str, str]] = {
     "uk": {
         "currency": "GBP",
-        "amountUnit": "pence",
         "volumeUnit": "litre",
     },
 }

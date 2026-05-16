@@ -12,7 +12,6 @@
           "diesel",
           "lastUpdate",
           "currency",
-          "amountUnit",
           "volumeUnit"
         ],
         "properties": {
@@ -25,14 +24,14 @@
           "petrol": {
             "type": "number",
             "title": "Petrol average",
-            "description": "National average unleaded petrol in amountUnit per volumeUnit (e.g. UK: pence per litre).",
-            "example": 157.9
+            "description": "National average unleaded in this row's ISO currency (major unit) per volumeUnit.",
+            "example": 1.579
           },
           "diesel": {
             "type": "number",
             "title": "Diesel average",
-            "description": "National average diesel in amountUnit per volumeUnit.",
-            "example": 187.1
+            "description": "National average diesel in this row's ISO currency (major unit) per volumeUnit.",
+            "example": 1.872
           },
           "lastUpdate": {
             "type": "string",
@@ -43,14 +42,8 @@
           "currency": {
             "type": "string",
             "title": "Currency",
-            "description": "ISO 4217 currency code for the numeric amounts.",
+            "description": "ISO 4217 code for ``petrol`` and ``diesel`` (major unit of this currency per volumeUnit).",
             "example": "GBP"
-          },
-          "amountUnit": {
-            "type": "string",
-            "title": "Amount unit",
-            "description": "Unit of the numeric price (e.g. pence for UK pump prices).",
-            "example": "pence"
           },
           "volumeUnit": {
             "type": "string",
@@ -100,7 +93,6 @@
           "petrol",
           "diesel",
           "currency",
-          "amountUnit",
           "volumeUnit",
           "lastUpdate"
         ]
@@ -114,7 +106,6 @@
           "petrol": { "label": "Petrol", "format": "number" },
           "diesel": { "label": "Diesel", "format": "number" },
           "currency": { "label": "Currency", "format": "text" },
-          "amountUnit": { "label": "Amount unit", "format": "text" },
           "volumeUnit": { "label": "Volume unit", "format": "text" },
           "lastUpdate": { "label": "Last update", "format": "text" }
         }

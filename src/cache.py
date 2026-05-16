@@ -70,7 +70,6 @@ async def try_get_fresh_cached_record(country: str) -> ActorOutputRecord | None:
             diesel=float(stored["diesel"]),
             lastUpdate=str(stored["lastUpdate"]),
             currency=str(stored.get("currency", pricing.get("currency", ""))),
-            amountUnit=str(stored.get("amountUnit", pricing.get("amountUnit", ""))),
             volumeUnit=str(stored.get("volumeUnit", pricing.get("volumeUnit", ""))),
         )
     except (KeyError, TypeError, ValueError) as e:

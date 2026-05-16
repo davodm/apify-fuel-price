@@ -4,7 +4,7 @@
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://docs.python.org/3.12/)
 [![Apify](https://img.shields.io/badge/platform-Apify-00A2E0?logo=apify&logoColor=white)](https://apify.com/)
 
-**Apify Actor (Python)** for **national average** unleaded petrol and diesel prices. **The United Kingdom is supported today**; the codebase is structured so **more countries can be added** without breaking the API. Includes a **1-hour cache** (named key-value store) and a **compact JSON** row on the default dataset with **explicit currency and units** so values are never ambiguous (e.g. litre vs gallon).
+**Apify Actor (Python)** for **national average** unleaded petrol and diesel prices. **The United Kingdom is supported today**; the codebase is structured so **more countries can be added** without breaking the API. Includes a **1-hour cache** (named key-value store) and a **compact JSON** row on the default dataset with **explicit currency and volume unit** so values are never ambiguous (e.g. litre vs gallon).
 
 ---
 
@@ -36,7 +36,7 @@ Fuel price averages move often. This Actor gives you a **small, stable JSON** pa
 ## Features
 
 - **Multi-country direction:** built to support **more countries over time**; **only `uk` is wired today** (see [`SUPPORTED_COUNTRIES`](src/config.py) and fetchers under `src/fetchers/`).
-- **UK market today:** national averages for unleaded (`petrol`) and `diesel`, with **`currency`**, **`amountUnit`**, and **`volumeUnit`** so each numeric field is clearly **pence per litre in GBP** (not pounds per gallon).
+- **Pricing contract:** each supported country has its own ISO **`currency`** and **`volumeUnit`**; **`petrol`** and **`diesel`** are always that currency's **major unit** per that volume (no cents/pence field—local quoting is normalized in code). **UK today:** sources use pence/litre; output is pounds per litre with `currency: GBP`.
 - **Case-insensitive input:** `uk`, `UK`, `Uk`, etc. (validated in [`.actor/input_schema.json`](.actor/input_schema.json)).
 - **Upstream HTTP:** each GET uses a **10 second** timeout ([`src/config.py`](src/config.py)); UK fallback **fetches both gviz endpoints in parallel** so each request is still bounded by that timeout.
 - **Resilient fetch:** primary HTML from [PetrolPrices.co.uk](https://petrolprices.co.uk/uk-fuel-prices-live.php), fallback to public **Google Visualization** JSON used by [PetrolPrices.com](https://www.petrolprices.com/latest-fuel-price-data-across-the-uk/).
@@ -47,7 +47,7 @@ Fuel price averages move often. This Actor gives you a **small, stable JSON** pa
 
 ## Roadmap
 
-- **Near term:** add more `country` values, per-country fetchers, and entries in [`COUNTRY_OUTPUT_PRICING`](src/config.py) (e.g. USD per gallon for US markets) so `petrol` / `diesel` stay interpretable everywhere.
+- **Near term:** add more `country` values, fetchers, and [`COUNTRY_OUTPUT_PRICING`](src/config.py) entries (`currency` + `volumeUnit`); extend `_parsed_to_output_record` in [`src/services/fuel_service.py`](src/services/fuel_service.py) so each locale normalizes to major currency per volume.
 - **Input schema:** will gain new `enum` / `pattern` values as countries ship; today it only accepts UK codes.
 
 ---
@@ -93,14 +93,13 @@ Each **successful** run appends **one object** to the **default dataset**.
 | Field | Type | Description |
 |-------|------|-------------|
 | `country` | string | Normalized lowercase code (`uk` today). |
-| `petrol` | number | National average unleaded, in **`amountUnit` per `volumeUnit`** in **`currency`**. |
+| `petrol` | number | National average unleaded: **major unit** of `currency` per `volumeUnit`. |
 | `diesel` | number | National average diesel, same units as `petrol`. |
-| `currency` | string | ISO 4217 code for the currency (UK: **`GBP`**). |
-| `amountUnit` | string | Unit of the numeric magnitude (UK: **`pence`** — pump prices are quoted in pence, not pounds). |
-| `volumeUnit` | string | Denominator for the “per” price (UK: **`litre`** — not US gallons). |
+| `currency` | string | ISO 4217 code for how to read the two prices (e.g. UK **`GBP`**, future regions their own code). |
+| `volumeUnit` | string | Volume basis for the “per” price (UK: **`litre`**). |
 | `lastUpdate` | string | ISO-8601 UTC: upstream “last updated” when parseable, otherwise the fetch time. |
 
-**UK example:** `petrol` and `diesel` are **GBP pence per litre**. For a future country you might see e.g. `USD` / `cent` / `gallon`; always read these three fields together with the numbers.
+**Convention:** `petrol` and `diesel` use the **major ISO 4217 unit** of `currency` per `volumeUnit` (e.g. GBP as pounds, USD as dollars—not pence or cents as the numeric scale). Each country's pipeline converts local quoting to that scale. **UK:** public sources use pence/litre; the Actor outputs **pounds per litre** with `currency: GBP`.
 
 **Caching:** TTL bookkeeping uses a `fetchedAt` field **only inside the named key-value store**, not in the dataset payload.
 

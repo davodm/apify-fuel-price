@@ -21,8 +21,10 @@ class ActorOutputRecord:
     """
     One dataset item pushed by the Actor (default dataset).
 
-    ``petrol`` and ``diesel`` are expressed in ``amountUnit`` per ``volumeUnit``
-    in ``currency`` (e.g. UK: pence per litre in GBP).
+    Each country row uses that country's ``currency`` (ISO 4217). ``petrol``
+    and ``diesel`` are expressed in that currency's **major unit** per
+    ``volumeUnit`` only—no extra amount-unit field (sub-units are normalized
+    in country-specific fetch/service code before this record is built).
 
     Cache storage may add ``fetchedAt`` for TTL only (see ``src/cache.py``).
     """
@@ -32,7 +34,6 @@ class ActorOutputRecord:
     diesel: float
     lastUpdate: str
     currency: str
-    amountUnit: str
     volumeUnit: str
 
     def to_push_dict(self) -> dict[str, Any]:
@@ -42,7 +43,6 @@ class ActorOutputRecord:
             "petrol": self.petrol,
             "diesel": self.diesel,
             "currency": self.currency,
-            "amountUnit": self.amountUnit,
             "volumeUnit": self.volumeUnit,
             "lastUpdate": self.lastUpdate,
         }

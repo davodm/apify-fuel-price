@@ -17,6 +17,28 @@ from src.models import ActorOutputRecord, ParsedFuelPrices
 from src import cache as cache_layer
 
 
+def _parsed_to_output_record(
+    country: str, parsed: ParsedFuelPrices, last_update: str
+) -> ActorOutputRecord:
+    """Map parsed upstream numbers to a row: major ``currency`` per ``volumeUnit`` only."""
+    pricing = COUNTRY_OUTPUT_PRICING[country]
+    if country == "uk":
+        # Public UK sources quote pence per litre; row uses ISO GBP (pounds) per litre.
+        petrol = round(parsed.petrol_ppl / 100, 3)
+        diesel = round(parsed.diesel_ppl / 100, 3)
+    else:
+        raise NotImplementedError(f"No output mapping for country {country!r}")
+
+    return ActorOutputRecord(
+        country=country,
+        petrol=petrol,
+        diesel=diesel,
+        lastUpdate=last_update,
+        currency=pricing["currency"],
+        volumeUnit=pricing["volumeUnit"],
+    )
+
+
 async def resolve_fuel_averages(country: str) -> ActorOutputRecord:
     """
     End-to-end resolution for one run: cache hit, else fetch with fallback.
@@ -44,16 +66,7 @@ async def resolve_fuel_averages(country: str) -> ActorOutputRecord:
     fetched_iso = to_iso_utc(now)
     last_update = parsed.last_update_raw or fetched_iso
 
-    pricing = COUNTRY_OUTPUT_PRICING[normalized]
-    record = ActorOutputRecord(
-        country=normalized,
-        petrol=round(parsed.petrol_ppl, 2),
-        diesel=round(parsed.diesel_ppl, 2),
-        lastUpdate=last_update,
-        currency=pricing["currency"],
-        amountUnit=pricing["amountUnit"],
-        volumeUnit=pricing["volumeUnit"],
-    )
+    record = _parsed_to_output_record(normalized, parsed, last_update)
     await cache_layer.write_cache_record(normalized, record, fetched_iso)
     return record
 
